@@ -513,12 +513,12 @@ async function handleMediaSelect(e){
       headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':file.type||'application/octet-stream'},
       body:file
     });
-    if(!res.ok)throw new Error('upload failed: '+res.status);
+    if(!res.ok){const errText=await res.text();throw new Error('Status '+res.status+': '+errText);}
     const publicUrl=`${SB}/storage/v1/object/public/media/${path}`;
     await api('POST','voice_replies',{sender:me,section:'main',media_url:publicUrl,media_type:mtype,media_name:file.name});
   }catch(err){
     console.log('media upload err',err);
-    alert('Upload fail aayi 🙏 Storage bucket "media" undo enn check cheyyu, pinne try cheyyu');
+    alert('Upload fail aayi 🙏 '+err.message);
   }
   hideStatus();
   loadAllReplies();
