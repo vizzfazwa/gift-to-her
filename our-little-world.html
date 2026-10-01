@@ -100,8 +100,8 @@ body{font-family:var(--font);background:linear-gradient(180deg,var(--sky1),var(-
     <h3>Who's playing? 💕</h3>
     <p>So the game knows whose turn it is</p>
     <div class="idrow">
-      <button class="mainbtn buy" onclick="pickWho('fawaz')">🧑🏻 Fawaz</button>
-      <button class="mainbtn act" onclick="pickWho('pathumma')">💕 Vismaya</button>
+      <button class="mainbtn buy" onclick="pickWho('fawaz')">🧸 Fawaz</button>
+      <button class="mainbtn act" onclick="pickWho('pathumma')">👰🏻‍♀️ Vismaya</button>
     </div>
   </div>
 </div>
@@ -123,7 +123,7 @@ body{font-family:var(--font);background:linear-gradient(180deg,var(--sky1),var(-
     </div>
     <div class="ground" id="ground"></div>
     <div class="card turnbar" id="turnBar">
-      <div class="turnWho" id="turnWho">🧑🏻 Your turn</div>
+      <div class="turnWho" id="turnWho">Your turn</div>
       <div class="turnSub" id="turnSub">Go ahead, make your move</div>
     </div>
     <div class="card">
@@ -175,7 +175,7 @@ async function api(method,path,body){
   if(method==='GET')return r.json();
   return r;
 }
-const NAMES={fawaz:'🧑🏻 Fawaz',pathumma:'💕 Vismaya'};
+const NAMES={fawaz:'🧸 Fawaz',pathumma:'👰🏻‍♀️ Vismaya'};
 function getIdentity(){
   const q=new URLSearchParams(location.search).get('who');
   if(q&&NAMES[q]){localStorage.setItem('owl_who',q);return q;}
@@ -241,7 +241,7 @@ function renderTurn(){
   const bar=document.getElementById('turnBar');
   const mine=myTurn();
   bar.className='card turnbar '+(mine?'you':'her')+(busy?' locked':'');
-  document.getElementById('turnWho').textContent=(busy?'🔒 ':'')+(mine?'🧑🏻 Your turn':NAMES[S.currentPlayer]+'’s turn');
+  document.getElementById('turnWho').textContent=(busy?'🔒 ':'')+(mine?NAMES[ME].split(' ')[0]+' Your turn':NAMES[S.currentPlayer]+'’s turn');
   document.getElementById('turnSub').textContent=busy?'Saving…':(mine?'Go ahead, make your move':'Waiting for '+NAMES[S.currentPlayer].split(' ')[1]+' to play');
   buyBtn().classList.toggle('locked',busy||!mine);
   actBtn().classList.toggle('locked',busy||!mine);
