@@ -87,6 +87,19 @@ body{font-family:var(--font);background:linear-gradient(180deg,var(--sky1),var(-
 /* toast */
 #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-120%);background:#2E3B2A;color:#fff;padding:12px 18px;border-radius:14px;font-size:.85rem;font-weight:600;z-index:50;transition:transform .35s;text-align:center;box-shadow:0 10px 26px rgba(0,0,0,.25);}
 #toast.show{transform:translateX(-50%) translateY(0);}
+/* final gift reveal */
+.giftReveal{position:fixed;inset:0;background:#0c0a08;z-index:1000;display:none;align-items:center;justify-content:center;padding:30px;}
+.giftReveal.show{display:flex;}
+.gr-stage{text-align:center;color:#f3ead6;max-width:340px;}
+.gr-box{font-size:4.5rem;margin-bottom:26px;}
+.gr-box.shake{animation:gr-shake .6s ease;}
+@keyframes gr-shake{0%,100%{transform:rotate(0);}20%{transform:rotate(-8deg);}40%{transform:rotate(8deg);}60%{transform:rotate(-6deg);}80%{transform:rotate(6deg);}}
+.gr-box.open{animation:gr-pop .5s ease;}
+@keyframes gr-pop{0%{transform:scale(1);}50%{transform:scale(1.35);}100%{transform:scale(1);}}
+.gr-text{font-size:1.05rem;line-height:1.6;min-height:70px;opacity:0;transition:opacity .7s;font-family:Georgia,serif;}
+.gr-text.show{opacity:1;}
+.gr-enter{display:none;margin-top:28px;background:#c9a227;color:#0c0a08;padding:15px 30px;border-radius:999px;text-decoration:none;font-weight:700;font-size:.9rem;}
+
 /* identity picker */
 .idpick{position:fixed;inset:0;background:rgba(20,20,30,.55);display:flex;align-items:center;justify-content:center;z-index:999;padding:20px;}
 .idpick .card{max-width:320px;width:100%;text-align:center;margin:0;}
@@ -104,6 +117,13 @@ body{font-family:var(--font);background:linear-gradient(180deg,var(--sky1),var(-
       <button class="mainbtn buy" onclick="pickWho('fawaz')">🧸 Fawaz</button>
       <button class="mainbtn act" onclick="pickWho('pathumma')">👰🏻‍♀️ Vismaya</button>
     </div>
+  </div>
+</div>
+<div class="giftReveal" id="giftReveal">
+  <div class="gr-stage">
+    <div class="gr-box" id="grBox">🎁</div>
+    <div class="gr-text" id="grText"></div>
+    <a class="gr-enter" id="grEnter" href="https://vizzfazwa.github.io/Our-space/lock-screen.html">✨ Enter Our Space</a>
   </div>
 </div>
 <div class="wrap">
@@ -164,7 +184,7 @@ body{font-family:var(--font);background:linear-gradient(180deg,var(--sky1),var(-
 </div>
 
 <nav class="tabs">
-  <a class="tabbtn" id="tabMsgBtn" href="gift-to-her_.html">💬<span>MSG</span></a>
+  <a class="tabbtn" id="tabMsgBtn" href="https://vizzfazwa.github.io/gift-to-her/">💬<span>MSG</span></a>
   <button class="tabbtn active" id="tabWorldBtn" onclick="showTab('world')">🌍<span>World</span></button>
   <button class="tabbtn" id="tabAchBtn" onclick="showTab('ach')">🏆<span>Achievements</span></button>
 </nav>
@@ -454,8 +474,27 @@ actBtn().onclick=async()=>{
 function renderGift(){
   const box=document.getElementById('giftBox');
   const now=new Date(),target=new Date(CFG.giftDate+'T00:00:00');
-  if(now>=target){ box.innerHTML='<div class="e">🎁</div><div>Final gift unlocked!</div><small>Something built outside this game…</small>'; box.style.cursor='pointer'; box.onclick=()=>toast('✨ open it in the real Gift page'); }
+  if(now>=target){ box.innerHTML='<div class="e">🎁</div><div>The final gift is ready</div><small>Tap to open it 🤍</small>'; box.style.cursor='pointer'; box.onclick=openFinalGift; }
   else { box.innerHTML='<div class="e">🎁🔒</div><div>The final gift is waiting…</div><small>Some things are worth waiting for…</small>'; box.onclick=null; box.style.cursor='default'; }
+}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
+async function openFinalGift(){
+  const overlay=document.getElementById('giftReveal'),box=document.getElementById('grBox'),
+        text=document.getElementById('grText'),enter=document.getElementById('grEnter');
+  overlay.classList.add('show');
+  box.className='gr-box shake';box.textContent='🎁';
+  await sleep(700);
+  box.className='gr-box open';box.textContent='✨';
+  await sleep(600);
+  const lines=['You made it.','But this wasn\u2019t really about finishing a game.','It was about everything you built along the way.'];
+  for(const line of lines){
+    text.textContent=line;text.classList.add('show');
+    await sleep(2300);
+    text.classList.remove('show');
+    await sleep(500);
+  }
+  text.textContent='';
+  enter.style.display='inline-block';
 }
 
 /* ===== achievements tab ===== */
