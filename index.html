@@ -90,27 +90,6 @@ body::before,#loginScr::before{content:'';position:fixed;inset:0;z-index:0;point
 button{font-family:var(--font);}
 
 .container{position:relative;z-index:2;max-width:640px;margin:0 auto;padding:22px 14px calc(78px + env(safe-area-inset-bottom));}
-/* 🎮 little world popup */
-.game-popup{position:fixed;right:14px;bottom:calc(70px + env(safe-area-inset-bottom));z-index:150;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:12px 14px;width:168px;box-shadow:0 10px 28px rgba(var(--shadow-rgb),.18);display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer;opacity:0;transform:translateY(14px) scale(.92);pointer-events:none;transition:opacity .3s ease,transform .3s ease;}
-.game-popup.show{opacity:1;transform:translateY(0) scale(1);pointer-events:auto;}
-.game-popup .gp-icon{font-size:1.5rem;}
-.game-popup .gp-text{font-size:.74rem;font-weight:600;color:var(--text);line-height:1.3;}
-.game-popup .gp-close{position:absolute;top:4px;right:6px;background:none;border:none;color:var(--muted);font-size:1rem;line-height:1;cursor:pointer;padding:2px 4px;}
-/* 💘 fly-to-logo heart */
-.fly-heart{position:fixed;font-size:1.05rem;pointer-events:none;z-index:200;opacity:1;transform:translate(0,0) scale(1);transition:transform .55s cubic-bezier(.3,.6,.4,1),opacity .5s ease .1s;}
-/* 🙈 peeking monkey */
-.peek-monkey{position:absolute;top:-13px;right:10px;font-size:1.05rem;opacity:0;transform:translateY(6px) scale(.7);transition:opacity .25s,transform .25s;pointer-events:none;}
-.composer:focus-within .peek-monkey{opacity:1;transform:translateY(0) scale(1);}
-/* 🎙 recording emoji */
-.rec-emoji{display:inline-block;font-size:1rem;opacity:0;transform:scale(.6);transition:opacity .2s,transform .2s;}
-.rec-emoji.show{opacity:1;transform:scale(1);animation:rec-pulse 1s ease-in-out infinite;}
-@keyframes rec-pulse{0%,100%{transform:scale(1);}50%{transform:scale(1.15);}}
-/* 🎧 playback emoji */
-.voice-bubble{position:relative;}
-.play-emoji{position:absolute;top:-10px;right:4px;font-size:.85rem;opacity:0;transform:translateY(4px) scale(.7);transition:opacity .2s,transform .2s;}
-.play-emoji.show{opacity:1;transform:translateY(0) scale(1);animation:play-bob 1.1s ease-in-out infinite;}
-@keyframes play-bob{0%,100%{transform:translateY(0) scale(1);}50%{transform:translateY(-3px) scale(1);}}
-
 .bottom-nav{position:fixed;left:0;right:0;bottom:0;z-index:100;display:flex;background:var(--card);border-top:1px solid var(--border);padding:6px 10px calc(6px + env(safe-area-inset-bottom));}
 .bn-item{flex:1;background:none;border:none;text-decoration:none;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px;border-radius:14px;font-size:1.15rem;color:var(--muted);cursor:pointer;font-family:var(--font);}
 .bn-item span{font-size:.64rem;font-weight:600;}
@@ -226,7 +205,7 @@ button{font-family:var(--font);}
 .vdur{font-size:.68rem;color:var(--muted);flex-shrink:0;font-weight:500;min-width:68px;text-align:right;}
 
 /* composer — input lives inside the card */
-.composer{position:relative;display:flex;align-items:flex-end;gap:8px;background:var(--field);border:1px solid var(--border);border-radius:20px;padding:6px 6px 6px 16px;transition:border-color .2s,box-shadow .2s;}
+.composer{display:flex;align-items:flex-end;gap:8px;background:var(--field);border:1px solid var(--border);border-radius:20px;padding:6px 6px 6px 16px;transition:border-color .2s,box-shadow .2s;}
 .composer:focus-within{border-color:var(--rose);box-shadow:0 0 0 3px var(--ring);}
 .text-reply-area{flex:1;min-height:38px;max-height:120px;background:none;border:none;color:var(--text);font-family:var(--font);font-size:16px;line-height:1.4;padding:8px 0;resize:none;outline:none;field-sizing:content;}
 .text-reply-area::placeholder{color:var(--ph);}
@@ -312,12 +291,12 @@ img.bubble-media{cursor:zoom-in;}
     <div class="lsub">A private little space, just ours.</div>
     <div class="user-cards" id="selSec">
       <div class="ucard fawaz-c" onclick="selUser('fawaz')">
-        <div class="ucard-icon">🧸</div>
+        <div class="ucard-icon">🌸</div>
         <div class="ucard-name">FAWAZ</div>
         <div class="ucard-sub">cherry blossom</div>
       </div>
       <div class="ucard vis-c" onclick="selUser('pathumma')">
-        <div class="ucard-icon">👰🏻‍♀️</div>
+        <div class="ucard-icon">🪻</div>
         <div class="ucard-name">VISMAYA</div>
         <div class="ucard-sub">lavender</div>
       </div>
@@ -369,7 +348,19 @@ img.bubble-media{cursor:zoom-in;}
       <div class="composer">
         <textarea class="text-reply-area" rows="1" placeholder="Write a message..."></textarea>
         <button class="text-send-btn" aria-label="Send" onclick="sendTextReply(this)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3.4 20.4 21 12 3.4 3.6 3.3 10l12 2-12 2z"/></svg></button>
-        <span class="peek-monkey">🙈</span>
+      </div>
+    </div>
+
+    <!-- 🎙 VOICE NOTES -->
+    <div class="card card-voice">
+      <div class="card-head">
+        <div class="card-icon">🎙</div>
+        <div><div class="card-title">Voice Notes</div><div class="card-sub">A little voice, anytime.</div></div>
+      </div>
+      <div class="chat-log" id="voiceChatLog"></div>
+      <div class="rec-area">
+        <button class="mic-btn" onclick="toggleRecording(this)" aria-label="Record voice note">🎤</button>
+        <div class="rec-status" id="recStatus">Tap to record</div>
       </div>
     </div>
 
@@ -390,29 +381,10 @@ img.bubble-media{cursor:zoom-in;}
       </div>
     </div>
 
-    <!-- 🎙 VOICE NOTES — moved to the bottom of the card stack -->
-    <div class="card card-voice">
-      <div class="card-head">
-        <div class="card-icon">🎙</div>
-        <div><div class="card-title">Voice Notes</div><div class="card-sub">A little voice, anytime.</div></div>
-      </div>
-      <div class="chat-log" id="voiceChatLog"></div>
-      <div class="rec-area">
-        <button class="mic-btn" onclick="toggleRecording(this)" aria-label="Record voice note">🎤</button>
-        <span class="rec-emoji" id="recEmoji">🐹🎶</span>
-        <div class="rec-status" id="recStatus">Tap to record</div>
-      </div>
-    </div>
-
   </div>
 
   <a class="link-btn" href="https://vizzfazwa.github.io/msg/" target="_blank" rel="noopener">Our Space</a>
 
-</div>
-<div class="game-popup" id="gamePopup">
-  <button class="gp-close" aria-label="Close" onclick="event.stopPropagation();closeGamePopup();">×</button>
-  <div class="gp-icon">🎮</div>
-  <div class="gp-text">Wanna play<br>Little World?</div>
 </div>
 <nav class="bottom-nav">
   <button class="bn-item active" id="bnMsg" type="button">💬<span>MSG</span></button>
@@ -424,7 +396,7 @@ img.bubble-media{cursor:zoom-in;}
 const SB='https://qrtzkmbdjuubzegcuadu.supabase.co';
 const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFydHprbWJkanV1YnplZ2N1YWR1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODE0NTU0NDAsImV4cCI6MjA5NzAzMTQ0MH0.wM1PqYVFkSgBWH1mEN3YrL-qPBuDd6P3ZjPuFPjsZ1k';
 const PASS={fawaz:'faazz',pathumma:'vizz'};
-const NAMES={fawaz:'Fawaz 🧸',pathumma:'Vismaya 👰🏻‍♀️'};
+const NAMES={fawaz:'Fawaz 🌸',pathumma:'Vismaya 🪻'};
 
 let me=null,selU=null,poll=null;
 let mediaRecorder=null,audioChunks=[],isRecording=false;
@@ -466,7 +438,6 @@ function doLogin(){
     document.querySelectorAll('.section').forEach(s=>s.classList.add('visible'));
     loadAllReplies();
     poll=setInterval(loadAllReplies,8000);
-    maybeShowGamePopup();
   }else{
     document.getElementById('errMsg').style.display='block';
     document.getElementById('passIn').value='';
@@ -481,43 +452,6 @@ function logout(){
   document.getElementById('selSec').style.display='flex';
   document.getElementById('passSec').style.display='none';
   document.getElementById('passIn').value='';
-}
-
-// 🎮 LITTLE WORLD POPUP — at most once per day, auto-hides after ~3.8s
-let gpTimer=null;
-function maybeShowGamePopup(){
-  const today=new Date().toISOString().slice(0,10);
-  if(localStorage.getItem('owl_popup_last')===today)return;
-  localStorage.setItem('owl_popup_last',today);
-  const p=document.getElementById('gamePopup');
-  p.onclick=()=>{location.href='our-little-world.html?who='+me;};
-  setTimeout(()=>{
-    p.classList.add('show');
-    gpTimer=setTimeout(closeGamePopup,3800);
-  },900);
-}
-function closeGamePopup(){
-  clearTimeout(gpTimer);
-  document.getElementById('gamePopup').classList.remove('show');
-}
-
-// 💘 heart-fly send animation — visual only, never touches send logic
-function flyHeart(fromBtn){
-  const to=document.querySelector('.app-brand .logo');
-  if(!to||!fromBtn)return;
-  const fr=fromBtn.getBoundingClientRect(), tr=to.getBoundingClientRect();
-  const h=document.createElement('div');
-  h.className='fly-heart';h.textContent='💘';
-  h.style.left=(fr.left+fr.width/2)+'px';
-  h.style.top=(fr.top+fr.height/2)+'px';
-  document.body.appendChild(h);
-  requestAnimationFrame(()=>{
-    const dx=(tr.left+tr.width/2)-(fr.left+fr.width/2);
-    const dy=(tr.top+tr.height/2)-(fr.top+fr.height/2);
-    h.style.transform='translate('+dx+'px,'+dy+'px) scale(.4)';
-    h.style.opacity='0';
-  });
-  setTimeout(()=>h.remove(),650);
 }
 
 // 3-dot MENU
@@ -604,7 +538,6 @@ async function sendTextReply(btn){
     await api('POST','voice_replies',{sender:me,section:sec,text_reply:txt});
     await archiveMessage({text_reply:txt});
     textarea.value='';
-    flyHeart(btn);
   }catch(err){console.log('err',err);}
   loadAllReplies();
 }
@@ -687,7 +620,6 @@ async function toggleRecording(btn){
       isRecording=true;
       btn.textContent='⏹';
       btn.classList.add('recording');
-      document.getElementById('recEmoji').classList.add('show');
       startRecTimer();
       showStatus('Recording ചെയ്യുന്നു... 🎙️');
     }catch(err){
@@ -699,7 +631,6 @@ async function toggleRecording(btn){
     isRecording=false;
     btn.textContent='🎤';
     btn.classList.remove('recording');
-    document.getElementById('recEmoji').classList.remove('show');
     stopRecTimer();
   }
 }
@@ -726,17 +657,17 @@ function createVoiceBubble(itemId){
       const pct=total>0?c/total:0;
       bars.forEach((b,i)=>{const a=i/bars.length<=pct;b.style.height=a?'18px':'5px';b.className='vbar'+(a?' active':'');});
     });
-    audio.addEventListener('ended',()=>{pb.textContent='▶';dur.textContent='0:00 / '+fmtDur(total);bars.forEach(b=>{b.style.height='5px';b.className='vbar';});hideStatus();voiceBubblePlaying=false;playEmoji.classList.remove('show');});
+    audio.addEventListener('ended',()=>{pb.textContent='▶';dur.textContent='0:00 / '+fmtDur(total);bars.forEach(b=>{b.style.height='5px';b.className='vbar';});hideStatus();voiceBubblePlaying=false;});
   }
 
   pb.onclick=async()=>{
     if(audio&&!audio.paused){
-      audio.pause();pb.textContent='▶';hideStatus();voiceBubblePlaying=false;playEmoji.classList.remove('show');
+      audio.pause();pb.textContent='▶';hideStatus();voiceBubblePlaying=false;
       return;
     }
     if(audio){
       allAudios.forEach(a=>{if(a!==audio)a.pause();});
-      audio.play();pb.textContent='⏸';showStatus('വോയ്സ് പ്ലേ ആകുന്നു... 🎵');voiceBubblePlaying=true;playEmoji.classList.add('show');
+      audio.play();pb.textContent='⏸';showStatus('വോയ്സ് പ്ലേ ആകുന്നു... 🎵');voiceBubblePlaying=true;
       return;
     }
     // First tap — fetch the actual audio data now (lazy load)
@@ -755,11 +686,10 @@ function createVoiceBubble(itemId){
       allAudios.forEach(a=>{if(a!==audio)a.pause();});
       audio.play();pb.textContent='⏸';
       showStatus('വോയ്സ് പ്ലേ ആകുന്നു... 🎵');
-      voiceBubblePlaying=true;playEmoji.classList.add('show');
+      voiceBubblePlaying=true;
     }catch(err){console.log('voice load err',err);pb.textContent='▶';hideStatus();}
   };
-  const playEmoji=document.createElement('span');playEmoji.className='play-emoji';playEmoji.textContent='🎧';
-  div.appendChild(pb);div.appendChild(wave);div.appendChild(dur);div.appendChild(playEmoji);
+  div.appendChild(pb);div.appendChild(wave);div.appendChild(dur);
   return div;
 }
 function fmtDur(s){if(!s||isNaN(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
