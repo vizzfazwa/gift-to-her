@@ -887,11 +887,23 @@ function createVoiceBubble(itemId){
 function fmtDur(s){if(!s||isNaN(s))return'0:00';const m=Math.floor(s/60),sec=Math.floor(s%60);return m+':'+(sec<10?'0':'')+sec;}
 
 // LOAD REPLIES for the single section
+let lastDataSig='';
+function dataSignature(all){
+  return all.length+'|'+all.map(i=>i.id+':'+(i.seen?1:0)+':'+(i.kettu_count||0)).join(',');
+}
+function nearBottom(el){return el.scrollHeight-el.scrollTop-el.clientHeight<60;}
+
 async function loadAllReplies(){
   if(firstLoad)showStatus('Chats loading cheyyunnu... 💬');
   try{
     const all=await api('GET','voice_replies?select=id,sender,section,kettu_count,text_reply,has_voice,media_url,media_type,media_name,seen,seen_at,created_at&section=eq.main&order=id.asc&limit=300');
     if(!Array.isArray(all))return;
+
+    // Nothing changed since the last poll — skip the rebuild entirely so idle polling
+    // doesn't repaint the chat or yank the scroll position every 8 seconds.
+    const sig=dataSignature(all);
+    if(sig===lastDataSig&&!firstLoad){return;}
+    lastDataSig=sig;
 
     const section=document.querySelector('.section');
 
@@ -912,33 +924,36 @@ async function loadAllReplies(){
     const voiceLog=document.getElementById('voiceChatLog');
     const textItems=all.filter(i=>i.text_reply);
     const voiceItems=all.filter(i=>i.has_voice);
+    const textWasNearBottom=nearBottom(textLog);
     textLog.innerHTML='';
     if(textItems.length===0)textLog.innerHTML='<div class="chat-empty">No messages yet ✨</div>';
     textItems.forEach(item=>textLog.appendChild(buildBubble(item)));
-    textLog.scrollTop=textLog.scrollHeight;
+    if(textWasNearBottom)textLog.scrollTop=textLog.scrollHeight;
 
     // Skip rebuilding the voice log while a voice note is actively playing, so it doesn't cut off
     if(!voiceBubblePlaying){
+      const voiceWasNearBottom=nearBottom(voiceLog);
       voiceLog.innerHTML='';
       if(voiceItems.length===0)voiceLog.innerHTML='<div class="chat-empty">No voice notes yet ✨</div>';
       voiceItems.forEach(item=>voiceLog.appendChild(buildBubble(item)));
-      voiceLog.scrollTop=voiceLog.scrollHeight;
+      if(voiceWasNearBottom)voiceLog.scrollTop=voiceLog.scrollHeight;
     }
 
     // Photos & Videos card
     const mediaLog=document.getElementById('mediaChatLog');
     const mediaItems=all.filter(i=>i.media_url);
     if(!mediaVideoPlaying){
+      const mediaWasNearBottom=nearBottom(mediaLog);
       mediaLog.innerHTML='';
       if(mediaItems.length===0)mediaLog.innerHTML='<div class="chat-empty">No photos/videos yet ✨</div>';
       mediaItems.forEach(item=>mediaLog.appendChild(buildBubble(item)));
-      mediaLog.scrollTop=mediaLog.scrollHeight;
+      if(mediaWasNearBottom)mediaLog.scrollTop=mediaLog.scrollHeight;
     }
 
-    // Mark incoming unseen messages as seen
+    // Mark incoming unseen messages as seen (seen_at is stamped server-side by a trigger)
     all.filter(i=>(i.text_reply||i.has_voice||i.media_url)&&i.sender!==me&&!i.seen&&!markedSeen.has(i.id)).forEach(item=>{
       markedSeen.add(item.id);
-      api('PATCH',`voice_replies?id=eq.${item.id}`,{seen:true,seen_at:new Date().toISOString()}).catch(e=>console.log('seen err',e));
+      api('PATCH',`voice_replies?id=eq.${item.id}`,{seen:true}).catch(e=>console.log('seen err',e));
     });
 
   }catch(err){console.log('load err',err);}
