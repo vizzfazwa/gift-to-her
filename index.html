@@ -605,20 +605,38 @@ async function toggleRecording(btn){
       mediaRecorder=new MediaRecorder(stream);
       audioChunks=[];
       mediaRecorder.ondataavailable=e=>audioChunks.push(e.data);
-      mediaRecorder.onstop=()=>{
-        const blob=new Blob(audioChunks,{type:'audio/webm'});
-        const reader=new FileReader();
-        reader.onloadend=async()=>{
-          showStatus('Voice send ചെയ്യുന്നു... 📤');
-          try{
-            await api('POST','voice_replies',{sender:me,section:sec,voice_data:reader.result,has_voice:true});
-            await archiveMessage({voice_data:reader.result,has_voice:true});
-          }catch(err){console.log('voice send err',err);}
-          hideStatus();
-          loadAllReplies();
-        };
-        reader.readAsDataURL(blob);
+      mediaRecorder.onstop=async()=>{
         stream.getTracks().forEach(t=>t.stop());
+        const mt=((mediaRecorder&&mediaRecorder.mimeType)||'audio/webm').split(';')[0]||'audio/webm';
+        const blob=new Blob(audioChunks,{type:mt});
+        showStatus('Voice send ചെയ്യുന്നു... 📤');
+        let voiceVal=null;
+        try{
+          // upload the audio file to Storage; only its small public URL goes into the database
+          const ext=mt.includes('mp4')?'m4a':mt.includes('ogg')?'ogg':'webm';
+          const path='voice_'+Date.now()+'_'+Math.random().toString(36).slice(2,8)+'.'+ext;
+          const res=await fetch(`${SB}/storage/v1/object/media/${path}`,{
+            method:'POST',
+            headers:{'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':mt},
+            body:blob
+          });
+          if(!res.ok)throw new Error('upload '+res.status);
+          voiceVal=`${SB}/storage/v1/object/public/media/${path}`;
+        }catch(err){
+          // upload failed -> fall back to the old way so the voice is never lost
+          console.log('voice upload err, using fallback',err);
+          try{
+            voiceVal=await new Promise((ok,bad)=>{const r=new FileReader();r.onloadend=()=>ok(r.result);r.onerror=bad;r.readAsDataURL(blob);});
+          }catch(e2){console.log('voice fallback err',e2);}
+        }
+        if(voiceVal){
+          try{
+            await api('POST','voice_replies',{sender:me,section:sec,voice_data:voiceVal,has_voice:true});
+            await archiveMessage({voice_data:voiceVal,has_voice:true});
+          }catch(err){console.log('voice send err',err);alert('Voice send aayilla 🙏 onnoode try cheyyu');}
+        }else{alert('Voice send aayilla 🙏 onnoode try cheyyu');}
+        hideStatus();
+        loadAllReplies();
       };
       mediaRecorder.start();
       isRecording=true;
