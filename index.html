@@ -280,6 +280,10 @@ img.bubble-media{cursor:zoom-in;}
 .annv-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:50px;padding:0 30px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.95rem;color:var(--offwhite);background:var(--btn);border:1px solid rgba(218,241,222,.35);box-shadow:inset 0 1px 0 rgba(218,241,222,.4),0 6px 20px rgba(0,127,95,.4),0 0 18px rgba(218,241,222,.16);transition:transform .2s,box-shadow .2s;-webkit-tap-highlight-color:transparent;}
 .annv-btn:hover{transform:translateY(-1px);box-shadow:inset 0 1px 0 rgba(218,241,222,.5),0 8px 24px rgba(0,127,95,.5),0 0 26px rgba(218,241,222,.28);}
 .annv-btn:active{transform:scale(.97);}
+.annv-replay{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;margin:12px auto 0;padding:0 22px;border-radius:999px;cursor:pointer;font-size:.84rem;font-weight:500;color:#F1DFA6;background:rgba(230,200,119,.08);border:1px solid rgba(230,200,119,.38);transition:transform .2s,background .2s,opacity .2s;-webkit-tap-highlight-color:transparent;}
+.annv-replay:hover{background:rgba(230,200,119,.16);}
+.annv-replay:active{transform:scale(.97);}
+.annv-replay:disabled{opacity:.5;cursor:default;}
 /* staged reveal — only while the first-time celebration runs (.annv-anim) */
 .annv-anim .annv-st{animation:annvFade .9s ease var(--d,0s) both;}
 .annv-anim .annv-days{animation:annvPop 1.1s cubic-bezier(.2,.8,.2,1) var(--d,0s) both;}
@@ -365,6 +369,7 @@ img.bubble-media{cursor:zoom-in;}
       <p class="annv-line annv-st" style="--d:2.4s">Some moments become memories. Some memories become our favourite story.</p>
       <p class="annv-sub annv-st" style="--d:2.8s">A little surprise is waiting for you…</p>
       <a class="annv-btn" href="https://vizzfazwa.github.io/Our-space/lock-screen.html" target="_blank" rel="noopener noreferrer">🎁 Open Your Gift</a>
+      <button type="button" class="annv-replay" id="annvReplayBtn" onclick="annvReplay()">✨ Re-animate</button>
     </div>
   </div>
 
@@ -507,6 +512,7 @@ function annvClear(){
   const c=document.getElementById('annvCard');if(!c)return;
   const fx=c.querySelector('.annv-fx');if(fx)fx.remove();
   c.classList.remove('annv-show','annv-anim');
+  const rb=document.getElementById('annvReplayBtn');if(rb)rb.disabled=false;
 }
 function annvBurst(fx,x,y){
   const n=14;
@@ -533,6 +539,18 @@ function annvFireworks(card){
     annvTimers.push(setTimeout(()=>annvBurst(fx,b[1],b[2]),b[0]));
   });
   annvTimers.push(setTimeout(()=>{fx.remove();},4800));
+}
+// manual replay (Re-animate button) — does not touch the saved once-per-user flag
+function annvReplay(){
+  try{
+    const card=document.getElementById('annvCard');if(!card||!card.classList.contains('annv-show'))return;
+    annvTimers.forEach(clearTimeout);annvTimers=[];
+    const old=card.querySelector('.annv-fx');if(old)old.remove();
+    card.classList.remove('annv-anim');void card.offsetWidth;card.classList.add('annv-anim');
+    const rb=document.getElementById('annvReplayBtn');if(rb)rb.disabled=true;
+    annvFireworks(card);
+    annvTimers.push(setTimeout(()=>{if(rb)rb.disabled=false;},4800));
+  }catch(e){console.log('annv replay err',e);}
 }
 function annvOnLogin(u){
   annvClear();
